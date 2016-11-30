@@ -36,21 +36,8 @@ def api():
 						pass
 					i += 1
 				resp_data['hdd'] = hdd
-			if hw == 'net':
-				net = {}
-				net['bytes_sent'] = psutil.net_io_counters().bytes_sent
-				net['bytes_recv'] = psutil.net_io_counters().bytes_recv
-				net['packets_sent'] = psutil.net_io_counters().packets_sent
-				net['packets_recv'] = psutil.net_io_counters().packets_recv
-				resp_data['net'] = net
 			if hw == 'uptime':
 				resp_data['uptime'] = time() - psutil.boot_time()
-			if hw == 'user':
-				resp_data['user'] = psutil.users()[0].name
-			if hw == 'os':
-				resp_data['os'] = [platform.platform(), platform.version()]
-			if hw == 'name':
-				resp_data['name'] = platform.uname()[1]
 
 		print resp_data
 

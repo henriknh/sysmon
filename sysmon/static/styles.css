@@ -7,7 +7,7 @@ body {
 	color: #F8F8F2;
 	overflow-y: hidden;
 	overflow-x: hidden;
-	font-family: Georgia;
+	font-family: "Courier New";
 }
 /*
 #66D9EF
@@ -20,7 +20,7 @@ body {
 #top #title {
 	line-height: 80px;
 	float: left;
-	font-size: 46px;
+	font-size: 30px;
 	margin-left: 25px;
 }
 #top #connecting {
@@ -28,15 +28,15 @@ body {
 	margin: 0 auto;
 	width: 200px;
 	text-align: center;
-	font-size: 24px;
+	font-size: 18px;
 }
 #top #frequency {
 	float: right;
-	font-size: 24px;
+	font-size: 12px;
 	display: block;
 	position: absolute;
 	right: 25px;
-	top: 25px;
+	top: 30px;
 	color: #272822;
 }
 
@@ -52,8 +52,9 @@ body {
 	position: absolute;
 	padding: 50px 50px 150px 50px;
 }
-#disks {right: 0;}
-#other {left: 0;}
+#disks {
+	width: 100%;
+}
 
 #disks .disk {
 	width: 100%; 

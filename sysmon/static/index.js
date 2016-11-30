@@ -8,11 +8,15 @@ var frequency = {
 var currentFrequency = "normal"
 
 var chartDataCount = 50
+var staticHeight = 80 + 60
+var paddingCircles = 30
+var font = "Courier New"
 
-var charts = [];
+var dataCPU   = []
+var dataRAM   = []
+var dataDisks = []
 
-var dataCPU = []
-var dataRAM = []
+var diskColors = ['#66D9EF', '#F92672', '#A6E22E', '#e6db74', '#7e8e91']
 
 function loop() {
 	sendAPIRequest()
@@ -43,11 +47,6 @@ window.onresize = function(event) {
 };
 
 function resize() {
-	var cpu = document.getElementById("cpu")
-	var ram = document.getElementById("ram")
-	var disks = document.getElementById("disks")
-	var staticHeight = 80 + 60
-
 	paintAll()
 };
 
@@ -68,67 +67,10 @@ function insertElem(array, elem) {
 }
 
 function paintAll() {
-	paint("cpu", dataCPU, '102, 217, 239', 1)
-	paint("ram", dataRAM, '249, 38, 114', 2)
 	paintGrid("grid")
-}
-
-function paint(elem, array, color, offset) {
-
-	if(!array)
-		return
-
-	var c2 = document.getElementById(elem).getContext('2d');
-
-	$('#'+elem).attr("width",$(window).width());
-	$('#'+elem).attr("height",$(window).height()/2);
-
-	var first = array[0]
-	var last = array.slice(-1)[0]
-	var tick = window.innerWidth/(chartDataCount-1)
-
-	// Create the 'mask' - it has the same path than the chart, but then follow the above rectangle.
-	c2.beginPath();
-	c2.fillStyle = "rgba(" + color + ", 0.4)"//'#272822';
-	$.each(array, function( index, value ) {
-		if(index == 0) {
-			c2.moveTo(value['x']*tick, (window.innerHeight/2)-(value['y']/100*window.innerHeight/2))
-		} else {
-			c2.lineTo(value['x']*tick, (window.innerHeight/2)-(value['y']/100*window.innerHeight/2))
-		}
-	});
-	if (last && first) {
-		c2.lineTo(last['x']*tick, window.innerHeight/2);
-		c2.lineTo(first['x']*tick, window.innerHeight/2);
-	}
-	c2.closePath();
-	c2.fill();
-
-	// Draw the chart itself
-	c2.strokeStyle = "rgba(" + color + ", 1)";
-	c2.beginPath();
-	$.each(array, function( index, value ) {
-		if(index == 0) {
-			c2.moveTo(value['x']*tick, window.innerHeight/2)
-			c2.lineTo(value['x']*tick, (window.innerHeight/2)-(value['y']/100*window.innerHeight/2))
-		} else {
-			c2.lineTo(value['x']*tick, (window.innerHeight/2)-(value['y']/100*window.innerHeight/2))
-		}
-	});
-	c2.stroke();
-
-	if (last) {
-		c2.font="12px Georgia";
-		c2.fillStyle="#FFF";
-		c2.textAlign="end"; 
-		c2.shadowColor = "black";
-		c2.shadowOffsetX = 1; 
-		c2.shadowOffsetY = 1; 
-		c2.shadowBlur = 1;
-
-		var text = elem + ' ' + last['y']
-		c2.fillText(text, last['x']*tick-5, (window.innerHeight/2)-(last['y']/100*window.innerHeight/2)-5);
-	}
+	paintArea("cpu", dataCPU, '102, 217, 239', 1)
+	paintArea("ram", dataRAM, '249, 38, 114', 2)
+	paintDisk("disks", dataDisks)
 }
 
 function paintGrid(elem) {
@@ -155,6 +97,129 @@ function paintGrid(elem) {
 	c2.stroke();
 }
 
+function paintArea(elem, array, color, offset) {
+
+	if(!array)
+		return
+
+	var c2 = document.getElementById(elem).getContext('2d')
+
+	$('#'+elem).attr("width",$(window).width());
+	$('#'+elem).attr("height",$(window).height()/2);
+
+	var first = array[0]
+	var last = array.slice(-1)[0]
+	var tick = window.innerWidth/(chartDataCount-1)
+
+	c2.beginPath();
+	c2.fillStyle = "rgba(" + color + ", 0.4)"
+	$.each(array, function( index, value ) {
+		if(index == 0) {
+			c2.moveTo(value['x']*tick, (window.innerHeight/2)-(value['y']/100*window.innerHeight/2))
+		} else {
+			c2.lineTo(value['x']*tick, (window.innerHeight/2)-(value['y']/100*window.innerHeight/2))
+		}
+	});
+	if (last && first) {
+		c2.lineTo(last['x']*tick, window.innerHeight/2);
+		c2.lineTo(first['x']*tick, window.innerHeight/2);
+	}
+	c2.closePath();
+	c2.fill();
+
+	c2.strokeStyle = "rgba(" + color + ", 1)"
+	c2.beginPath();
+	$.each(array, function( index, value ) {
+		if(index == 0) {
+			c2.moveTo(value['x']*tick, window.innerHeight/2)
+			c2.lineTo(value['x']*tick, (window.innerHeight/2)-(value['y']/100*window.innerHeight/2))
+		} else {
+			c2.lineTo(value['x']*tick, (window.innerHeight/2)-(value['y']/100*window.innerHeight/2))
+		}
+	});
+	c2.stroke();
+
+	if (last) {
+		c2.font="12px " + font
+		c2.fillStyle="#FFF";
+		c2.textAlign="end"; 
+		c2.shadowColor = "black";
+		c2.shadowOffsetX = 1; 
+		c2.shadowOffsetY = 1; 
+		c2.shadowBlur = 1;
+
+		var text = elem + ' ' + last['y']
+		c2.fillText(text, last['x']*tick-5, (window.innerHeight/2)-(last['y']/100*window.innerHeight/2)-5);
+	}
+}
+
+function paintDisk(elem, array) {
+
+	var c2 = document.getElementById(elem).getContext("2d");
+
+	var width 	= $(window).width()
+	var height 	= $(window).height()/2 - staticHeight/2
+
+	var circleSize = (height-90)/2
+
+	$('#'+elem).attr("width", width)
+	$('#'+elem).attr("height", height)
+
+	var j = 0
+	for(var key in array) {
+
+        if (j == diskColors.length) {
+        	console.log('more disks than colors for disks')
+        	console.log('you can add more on line 19')
+        	console.log('var diskColors = [ ... ]')
+        	break;
+        }
+
+        var x = circleSize*2 + paddingCircles*2
+        var y = circleSize + paddingCircles
+
+		var lastend = 0;
+		var data = [array[key], 100-array[key]]; // If you add more data values make sure you add more colors
+		var myTotal = 0; // Automatically calculated so don't touch
+
+		for (var e = 0; e < data.length; e++) {
+		  myTotal += data[e];
+		}
+
+		for (var i = 0; i < data.length; i++) {
+			if(i == 1)
+				c2.globalAlpha = 0.1
+			else
+				c2.globalAlpha = 1.0
+			c2.fillStyle = diskColors[j];
+			c2.beginPath();
+			c2.moveTo(x*j + circleSize + paddingCircles, y);
+			// Arc Parameters: x, y, radius, startingAngle (radians), endingAngle (radians), antiClockwise (boolean)
+			c2.arc(x*j + circleSize + paddingCircles, y, circleSize, lastend, lastend + (Math.PI * 2 * (data[i] / myTotal)), false);
+			c2.lineTo(x*j + circleSize + paddingCircles, y);
+			c2.fill();
+			lastend += Math.PI * 2 * (data[i] / myTotal);
+		}
+
+		c2.globalAlpha = 1.0
+		c2.font="24px " + font
+		c2.fillStyle="#FFF";
+		c2.textAlign="center"; 
+		c2.shadowColor = "black";
+		c2.shadowOffsetX = 1; 
+		c2.shadowOffsetY = 1; 
+		c2.shadowBlur = 1;
+
+		var text = key
+		c2.fillText(text, x*j + circleSize + paddingCircles, y*2);
+
+		var text = array[key] + '%'
+		c2.fillText(text, x*j + circleSize + paddingCircles, y*1.4);
+
+		j++
+	}	
+}
+
 function sendAPIRequest() {
 
 	data = {
@@ -163,11 +228,7 @@ function sendAPIRequest() {
 			"cpu",
 			"ram",
 			"hdd",
-			//"net",
 			"uptime",
-			"name",
-			"user",
-			"os",
 		]
 	}
 
@@ -177,16 +238,20 @@ function sendAPIRequest() {
         data: JSON.stringify(data, null, '\t'),
 		contentType: 'application/json',
         success: function(result) {
-        	console.log(result.results)
+
         	var json = result.results
+
 			newCPUData = {x: chartDataCount, y: json['cpu'] }
 			insertElem(dataCPU, newCPUData)
+
 			newRAMData = {x: chartDataCount, y: json['ram'] }
 			insertElem(dataRAM, newRAMData)
 
+			dataDisks = json['hdd']
+
 			updateHDD(json['hdd'])
-			updateInfo(json['user'], json['os'], json['name'], json['ipv6'], json['ipv4'], json['uptime'], json['net'])
-			document.getElementById('connecting').innerHTML = ''
+
+			document.getElementById('connecting').innerHTML = getUptimeText(json['uptime'])
 	    },
 	    error: function (xhr, ajaxOptions, thrownError) {
 			document.getElementById('connecting').innerHTML = 'connecting...'
@@ -225,31 +290,4 @@ function updateHDD(hdd) {
 		'</div>'
 		$("#disks").append(text)
 	})
-}
-
-function updateInfo(user, os, name, ipv6, ipv4, uptime, net) {
-	var text = '<table>'
-	text += getInfoItemOneCell(user+ ' @', name)
-	text += getInfoItem('name', name)
-	text += getInfoItem('uptime', getUptimeText(uptime))
-	$.each(net, function( index, value ) {
-		text += getInfoItem(index, value)
-	})
-	text += '</table>'
-	document.getElementById('other').innerHTML = text
-}
-function getInfoItemOneCell(value, data) {
-	var text =
-	'<tr>' +
-		'<th>' + value + ' ' +data + '</th>' +
-	'</tr>'
-	return text
-}
-function getInfoItem(value, data) {
-	var text =
-	'<tr>' +
-		'<th>' + value +'</th>' +
-		'<td>' + data + '</td>' +
-	'</tr>'
-	return text
 }

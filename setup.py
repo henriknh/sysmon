@@ -14,5 +14,6 @@ setup(
     zip_safe=False,
     install_requires=[
         'Flask',
+        'psutil',
     ],
 )

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="{{ url_for('static', filename='index.js') }}"></script>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+	<script src="{{ url_for('static', filename='Chart.min.js') }}"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+<title>sysmon</title>
+</head>
+<body>
+
+<div id="top">
+	<div id="title">sysmon</div>
+	<div id="connecting">connecting...</div>
+	<select id="frequency" onchange="changeFrequency()"></select>
+</div>
+<canvas id="ram" class="chart-area"></canvas>
+<canvas id="cpu" class="chart-area"></canvas>
+<canvas id="grid" class="chart-area"></canvas>
+
+<div id="disks" class="info"></div>
+<div id="other" class="info"></div>
+
+</body>
+</html>

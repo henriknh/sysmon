@@ -229,11 +229,9 @@ function updateHDD(hdd) {
 
 function updateInfo(user, os, name, ipv6, ipv4, uptime, net) {
 	var text = '<table>'
-	text += getInfoItemOneCell(user, name)
+	text += getInfoItemOneCell(user+ ' @', name)
 	text += getInfoItem('name', name)
 	text += getInfoItem('uptime', getUptimeText(uptime))
-	text += getInfoItem('ipv6', ipv6)
-	text += getInfoItem('ipv4', ipv4)
 	$.each(net, function( index, value ) {
 		text += getInfoItem(index, value)
 	})

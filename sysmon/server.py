@@ -47,9 +47,6 @@ def api():
 				resp_data['uptime'] = time() - psutil.boot_time()
 			if hw == 'user':
 				resp_data['user'] = psutil.users()[0].name
-			if hw == 'ip':
-				resp_data['ipv6'] = psutil.net_if_addrs()['Ethernet'][0].address
-				resp_data['ipv4'] = psutil.net_if_addrs()['Ethernet'][1].address
 			if hw == 'os':
 				resp_data['os'] = [platform.platform(), platform.version()]
 			if hw == 'name':

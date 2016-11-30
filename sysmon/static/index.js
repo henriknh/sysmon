@@ -166,7 +166,6 @@ function sendAPIRequest() {
 			//"net",
 			"uptime",
 			"name",
-			"ip",
 			"user",
 			"os",
 		]

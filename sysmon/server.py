@@ -60,4 +60,4 @@ def api():
 	return jsonify(results=resp_data)
 
 port = 56568
-app.run(debug=False, port=int(port))
+app.run(host='0.0.0.0', debug=False, port=int(port))

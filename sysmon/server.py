@@ -18,8 +18,8 @@ elif os.name == 'nt':       # Windows
     import sys
 
     def disk_usage(path):
-        _, total, free = ctypes.c_ulonglong(), ctypes.c_ulonglong(), \
-                           ctypes.c_ulonglong()
+        _, total, free, used = ctypes.c_ulonglong(), ctypes.c_ulonglong(), \
+                           ctypes.c_ulonglong(), ctypes.c_ulonglong()
         if sys.version_info >= (3,) or isinstance(path, unicode):
             fun = ctypes.windll.kernel32.GetDiskFreeSpaceExW
         else:
@@ -28,7 +28,7 @@ elif os.name == 'nt':       # Windows
         if ret == 0:
             raise ctypes.WinError()
         used = total.value - free.value
-        return used/total*100 #[total.value, used, free.value]
+        return float(used)/float(total.value)*100 #[total.value, used, free.value]
 else:
     raise NotImplementedError("platform not supported")
 

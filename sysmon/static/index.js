@@ -178,8 +178,12 @@ function paintDisk(elem, array) {
         var x = circleSize*2 + paddingCircles*2
         var y = circleSize + paddingCircles
 
-		var lastend = 0;
-		var data = [array[key], 100-array[key]]; // If you add more data values make sure you add more colors
+		var lastend = -0.5*Math.PI;
+		var pie = array[key]
+		if(pie != 0)
+			var data = [100-Math.ceil(pie), Math.ceil(pie)]; // If you add more data values make sure you add more colors
+		else
+			var data = [0, 100];
 		var myTotal = 0; // Automatically calculated so don't touch
 
 		for (var e = 0; e < data.length; e++) {
@@ -195,7 +199,7 @@ function paintDisk(elem, array) {
 			c2.beginPath();
 			c2.moveTo(x*j + circleSize + paddingCircles, y);
 			// Arc Parameters: x, y, radius, startingAngle (radians), endingAngle (radians), antiClockwise (boolean)
-			c2.arc(x*j + circleSize + paddingCircles, y, circleSize, lastend, lastend + (Math.PI * 2 * (data[i] / myTotal)), false);
+			c2.arc(x*j + circleSize + paddingCircles, y, circleSize, lastend, lastend + (Math.PI * 2 * (data[i] / myTotal)), true);
 			c2.lineTo(x*j + circleSize + paddingCircles, y);
 			c2.fill();
 			lastend += Math.PI * 2 * (data[i] / myTotal);

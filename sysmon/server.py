@@ -34,6 +34,12 @@ else:
 
 disk_usage.__doc__ = __doc__
 
+blacklist = []
+with open('blacklist') as f:
+    for line in f:
+        blacklist.append(line.rstrip())
+print 'blacklist: ' + str(blacklist)
+
 @app.route('/')
 def root():
 	return render_template('index.html')
@@ -59,10 +65,9 @@ def api():
 				i = 1
 				hdd = {}
 				for disk in psutil.disk_partitions():
-					try:
-						hdd[disk.mountpoint] = "{0:.1f}".format(disk_usage(disk.mountpoint))
-					except OSError:
-						pass
+					if disk.mountpoint in blacklist:
+						continue
+					hdd[disk.mountpoint] = "{0:.1f}".format(disk_usage(disk.mountpoint))
 					i += 1
 				resp_data['hdd'] = hdd
 			if hw == 'uptime':
